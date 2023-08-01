@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      "primary": "Nunito Sans",
+    },
     colors: {
       // dm elements
       "dark-blue": "hsl(209, 23%, 22%)",
