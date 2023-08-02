@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Router, Routes, Route, Link, useParams } from 'react-router-dom';
 
 interface Country {
   name: string,
@@ -74,6 +75,73 @@ interface Country {
 }
 
 
+function DetailedCountry(props: {countries:Country[]}) {
+
+  const [borderCountries, setBorderCountries] = useState<string[]>([]);
+  const { name } = useParams();
+  const country = props.countries.find(country => country.name === name);
+
+  const borderAbbrevs = country?.borders;
+
+  // find countries where alpha2code is in borderAbbrevs
+  // let borderCountries:string[] = [];
+
+  function getBorderCountries() {
+    let countries:string[] = [];
+    for (let i = 0; i < props.countries.length; i++) {
+      if (!borderCountries.includes(props.countries[i].alpha3Code)) {
+        if (borderAbbrevs?.includes(props.countries[i].alpha3Code)) {
+          countries.push(props.countries[i].name);
+        }
+      }
+    }
+    setBorderCountries(countries);
+  } 
+
+  useEffect(() => {
+    getBorderCountries();
+  }, []);
+
+
+  return (
+    <div>
+      {country && (
+        <div key={country.name}>
+          <img src={country.flag} alt="" />
+          <p>{country.name}</p>
+          <p>Native Name: {country.nativeName}</p>
+          <p>Population: {country.population}</p>
+          <p>Region: {country.region}</p>
+          <p>Sub Region: {country.subregion}</p>
+          {country.capital && 
+            <p>Capital: {country.capital}</p>
+          }
+          <p>Top Level Domain: {country.topLevelDomain}</p>
+          <p>Currencies: </p>
+          {country.currencies.map(currency => (
+            <p key={currency.name}>{currency.name}</p>
+          ))}
+          <div>
+            <p>Languages: </p>
+            {country.languages.map(language => (
+              <p key={language.name}>{language.name}</p>
+            ))}
+          </div>
+
+          <div>
+            <p>Border Countries: </p>
+            {borderCountries && borderCountries.map(borderCountry => (
+              <Link to={`../countries/${borderCountry}`} key={borderCountry}>{borderCountry}</Link>
+            ))}
+          </div>
+
+        </div>
+      )
+      }
+    </div>
+  )
+}
+
 function Search() {
   return (
     <div>
@@ -121,6 +189,7 @@ function NavBar() {
 function CountryCard(props: {country:Country}) {
   return (
     <div>
+      <Link to={`countries/${props.country.name}`}>LINK</Link>
       <img src={props.country.flag} alt={`flag of ${props.country.name}`} />
       <p>{props.country.name}</p>
       <p>Population: {props.country.population}</p>
@@ -154,7 +223,6 @@ function Countries(props: {countries:Country[]}) {
 function App() {
   const [allCountries, setallCountries] = useState(Array<Country>);
 
-
   function fetchCountries() {
     fetch('data.json')
       .then(response => response.json())
@@ -169,7 +237,11 @@ function App() {
 
   return (
     <>
-      <Countries countries={allCountries} />
+      <Routes>
+        <Route path="/" element={<Countries countries={allCountries} />}>
+        </Route>
+        <Route path="/countries/:name" element={<DetailedCountry countries={allCountries} />}></Route>
+      </Routes>
     </>
   );
 }
