@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import { Router, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
+import moon from './assets/images/moon-icon.svg';
+import search from './assets/images/search-icon.svg';
+import DropdownIcon from "./components/DropdownIcon";
+import SearchIcon from "./components/SearchIcon";
+import MoonIcon from "./components/MoonIcon";
 
 interface Country {
   name: string,
@@ -75,17 +80,20 @@ interface Country {
 }
 
 
-function DetailedCountry(props: {countries:Country[]}) {
+function DetailedCountry(props: {countries:Country[], mode:string}) {
+
+  // trigger useeffect when url changes
+  const location = useLocation();
 
   const [borderCountries, setBorderCountries] = useState<string[]>([]);
   const { name } = useParams();
-  const country = props.countries.find(country => country.name === name);
-
+  const country = props.countries.find((country) => country.name === name);
+  
   const borderAbbrevs = country?.borders;
-
+  
   // find countries where alpha2code is in borderAbbrevs
   // let borderCountries:string[] = [];
-
+  
   function getBorderCountries() {
     let countries:string[] = [];
     for (let i = 0; i < props.countries.length; i++) {
@@ -97,14 +105,15 @@ function DetailedCountry(props: {countries:Country[]}) {
     }
     setBorderCountries(countries);
   } 
-
+  
   useEffect(() => {
     getBorderCountries();
-  }, []);
+  }, [location]);
 
 
   return (
-    <div>
+    <div className="w-[500px] rounded-md bg-dark-blue">
+      <Link to={'/'} >Back</Link>
       {country && (
         <div key={country.name}>
           <img src={country.flag} alt="" />
@@ -130,8 +139,8 @@ function DetailedCountry(props: {countries:Country[]}) {
 
           <div>
             <p>Border Countries: </p>
-            {borderCountries && borderCountries.map(borderCountry => (
-              <Link to={`../countries/${borderCountry}`} key={borderCountry}>{borderCountry}</Link>
+            {borderCountries.length > 1 && borderCountries.map(borderCountry => (
+              <Link to={`../countries/${borderCountry}`} state={props.countries} key={borderCountry}>{borderCountry}</Link>
             ))}
           </div>
 
@@ -144,58 +153,76 @@ function DetailedCountry(props: {countries:Country[]}) {
 
 function Search() {
   return (
-    <div>
-      <input type="text" placeholder="Search for a country..."/>
+    <div className="w-full h-[60px] rounded-lg bg-white flex px-6 drop-shadow-md">
+      <SearchIcon color="light"></SearchIcon> 
+      <input className="w-full px-6 outline-none" type="text" placeholder="Search for a country..."/>
     </div>
   );
 }
 
 function FilterDropdown() {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  function toggleDrop() {
+    const toggle = dropdownVisible ? false : true;
+    setDropdownVisible(toggle);
+  }
+
   return (
-    <div>
-      <select name="filter" id="filter">
-        <option value="Africa">Africa</option>
-      </select>
+    <div className="flex flex-col gap-1 w-[250px] text-left relative mb-8">
+      <button onClick={toggleDrop} className="h-[60px] z-20 px-6 flex items-center justify-between bg-dark-blue rounded-md text-white self-start w-full text-left drop-shadow-md">
+        <p>Filter by Region</p>
+        <DropdownIcon color={"dark"} />
+      </button>
+        <div className={`transition-all ease-in-out duration-500 ${dropdownVisible ? "opacity-100" : "opacity-0 -translate-y-20 scale-y-0 -top-0"} opacity-0 absolute z-10 w-full top-16 flex flex-col gap-1 items-start bg-dark-blue rounded-md p-6 text-white`}>
+          <button className="w-full text-left">Africa</button>
+          <button className="w-full text-left">America</button>
+          <button className="w-full text-left">Asia</button>
+          <button className="w-full text-left">Europe</button>
+          <button className="w-full text-left">Oceania</button>
+        </div>
     </div>
   );
 }
 
 function FilterArea() {
   return (
-    <div>
+    <div className="px-[20px] flex flex-col md:flex-row justify-between items-start gap-8">
       <Search />
       <FilterDropdown />
     </div>
   );
 }
 
-function ThemeSwitcher() {
+function ThemeSwitcher(props: {toggleMode:Function}) {
   return (
-    <div>
-      Dark Mode
-    </div>
+    <button onClick={() => props.toggleMode()} className="font-semibold flex gap-2 items-center">
+      <MoonIcon color="light" />
+      <p>Dark Mode</p>
+    </button>
   )
 }
 
-function NavBar() {
+function NavBar(props: {toggleMode:Function}) {
   return (
-    <div>
-      <p>Where in the world?</p>
-      <ThemeSwitcher />
+    <div className="h-[100px] shadow-md flex items-center justify-between px-[20px] mb-6">
+      <p className="font-extrabold text-very-dark-blue-text">Where in the world?</p>
+      <ThemeSwitcher toggleMode={props.toggleMode}/>
     </div>
   );
 }
 
 function CountryCard(props: {country:Country}) {
   return (
-    <div>
-      <Link to={`countries/${props.country.name}`}>LINK</Link>
-      <img src={props.country.flag} alt={`flag of ${props.country.name}`} />
-      <p>{props.country.name}</p>
-      <p>Population: {props.country.population}</p>
-      <p>Region: {props.country.region}</p>
-      <p>Capital: {props.country.capital}</p>
-    </div>
+    <Link to={`countries/${props.country.name}`} className="flex flex-col rounded-md max-w-[500px] min-w-[100%] text-white bg-dark-blue drop-shadow-xl overflow-hidden">
+      <img src={props.country.flag} className="h-[200px] object-cover over" alt={`flag of ${props.country.name}`} />
+      <div className="p-6">
+        <p className="font-extrabold text-xl py-4">{props.country.name}</p>
+        <p className="font-semibold">Population: <span className="font-thin">{props.country.population}</span></p>
+        <p className="font-semibold">Region: <span className="font-thin">{props.country.region}</span></p>
+        <p className="font-semibold">Capital: <span className="font-thin">{props.country.capital}</span></p>
+      </div>
+    </Link>
   )
 }
 
@@ -203,18 +230,20 @@ function DisplayCountries(props: {countries:Country[]}) {
   return (
     <div>
       <FilterArea />
+      <div className="grid items-center w-full px-12 gap-12">
+
       {props.countries.map(country => (
         <CountryCard key={country.name} country={country} />
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
-function Countries(props: {countries:Country[]}) {
+function Countries(props: {countries:Country[], mode:string}) {
   return (
     <>
-    <NavBar />
-    <DisplayCountries countries={props.countries}/>
+      <DisplayCountries countries={props.countries}/>
     </>
   )
 }
@@ -222,25 +251,39 @@ function Countries(props: {countries:Country[]}) {
 
 function App() {
   const [allCountries, setallCountries] = useState(Array<Country>);
+  const [mode, setMode] = useState('dark');
 
-  function fetchCountries() {
-    fetch('data.json')
-      .then(response => response.json())
-      .then(data => setallCountries(data))
-      .catch(error => console.error(error))
+  async function fetchCountries() {
+    const response = await fetch('/data.json')
+    const data = await response.json();
+
+    setallCountries(data);
   }
 
+  function toggleMode() {
+    let toggled = mode === "dark" ? "light" : "dark";
+    setMode(toggled);
+  }
+
+  // useEffect(() => {
+  //   console.log('use effect called');
+  // })
+
+  // useEffect(() => {console.log(mode)}, [mode]);
+
   useEffect(() => {
-    fetchCountries();
+    if (allCountries.length < 1)
+      fetchCountries();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
+      <NavBar toggleMode={toggleMode}/>
       <Routes>
-        <Route path="/" element={<Countries countries={allCountries} />}>
+        <Route path="/" element={<Countries mode={mode} countries={allCountries} />}>
         </Route>
-        <Route path="/countries/:name" element={<DetailedCountry countries={allCountries} />}></Route>
+        <Route path="/countries/:name" element={<DetailedCountry mode={mode} countries={allCountries} />}></Route>
       </Routes>
     </>
   );
