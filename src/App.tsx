@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Router, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
-import moon from './assets/images/moon-icon.svg';
-import search from './assets/images/search-icon.svg';
+import { Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 import DropdownIcon from "./components/DropdownIcon";
 import SearchIcon from "./components/SearchIcon";
 import MoonIcon from "./components/MoonIcon";
@@ -108,6 +106,7 @@ function DetailedCountry(props: {countries:Country[], mode:string}) {
   
   useEffect(() => {
     getBorderCountries();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
 
@@ -151,16 +150,24 @@ function DetailedCountry(props: {countries:Country[], mode:string}) {
   )
 }
 
-function Search() {
+function Search(props: {filterByCountry:Function, filterBySearch:Function}) {
   return (
     <div className="w-full h-[60px] max-w-[30rem] rounded-lg bg-white flex px-6 drop-shadow-md">
       <SearchIcon color="light"></SearchIcon> 
-      <input className="w-full px-6 outline-none" type="text" placeholder="Search for a country..."/>
+      <input className="w-full px-6 outline-none" type="text" placeholder="Search for a country..." onChange={(e) => props.filterBySearch(e.target.value)}/>
     </div>
   );
 }
 
-function FilterDropdown() {
+function FilterButton(props: {region:string, filterCountries:Function}) {
+  return <button onClick={() => props.filterCountries(props.region)}>{props.region}</button>
+}
+
+function FilterDropdown(props: {filterCountriesByRegion:Function}) {
+  const regions = [
+    "Africa", "Americas", "Asia", "Europe", "Oceania" 
+  ]
+
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   function toggleDrop() {
@@ -175,21 +182,20 @@ function FilterDropdown() {
         <DropdownIcon color={"dark"} />
       </button>
         <div className={`transition-all ease-in-out duration-500 ${dropdownVisible ? "opacity-100 top-16" : "opacity-0 -translate-y-20 scale-y-0 -top-0"} opacity-0 absolute z-10 w-full flex flex-col gap-1 items-start bg-dark-blue rounded-md p-6 text-white`}>
-          <button className="w-full text-left">Africa</button>
-          <button className="w-full text-left">America</button>
-          <button className="w-full text-left">Asia</button>
-          <button className="w-full text-left">Europe</button>
-          <button className="w-full text-left">Oceania</button>
+
+          {regions.map(region => (
+            <FilterButton key={region} region={region} filterCountries={props.filterCountriesByRegion} />
+          ))}
         </div>
     </div>
   );
 }
 
-function FilterArea() {
+function FilterArea(props: {filterCountriesByRegion:Function, filterBySearch:Function}) {
   return (
     <div className="px-8 flex flex-col md:flex-row justify-between items-start gap-8 xl:p-0">
-      <Search />
-      <FilterDropdown />
+      <Search filterBySearch={props.filterBySearch} filterByCountry={() => props.filterCountriesByRegion}/>
+      <FilterDropdown filterCountriesByRegion={props.filterCountriesByRegion}/>
     </div>
   );
 }
@@ -227,15 +233,47 @@ function CountryCard(props: {country:Country}) {
 }
 
 function DisplayCountries(props: {countries:Country[]}) {
+
+  const [filtered, setFiltered] = useState(false);
+  const [displayedCountries, setdisplayedCountries] = useState(Array<Country>);
+
+  function filterBySearch(search: string) {
+    console.log('called filterbyserach');
+    const countryMatches = props.countries.filter(
+      (country) => country.name.includes(search))
+
+    setFiltered(true);
+    setdisplayedCountries(countryMatches);
+  }
+
+  function filterCountriesByRegion(region: string) {
+    const filteredCountries = props.countries.filter(
+      (country) => country.region === region)
+
+    setFiltered(true);
+    setdisplayedCountries(filteredCountries);
+  }
+
+
   return (
     <div className="mx-auto max-w-[80rem]">
-      <FilterArea />
+      <FilterArea filterBySearch={filterBySearch} filterCountriesByRegion={filterCountriesByRegion} />
       <div className="grid grid-cols-1 items-center justify-center content-center place-content-center w-full gap-12
       md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
-      {props.countries.map(country => (
-        <CountryCard key={country.name} country={country} />
-        ))}
+      {filtered ? 
+          <>
+          {displayedCountries.map(country => (
+             <CountryCard key={country.name} country={country} />
+          ))}
+          </>
+        :
+          <>
+            {props.countries.map(country => (
+              <CountryCard key={country.name} country={country} />
+              ))}
+          </>
+      }
       </div>
     </div>
   );
