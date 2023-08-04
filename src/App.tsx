@@ -153,7 +153,7 @@ function DetailedCountry(props: {countries:Country[], mode:string}) {
 
 function Search() {
   return (
-    <div className="w-full h-[60px] rounded-lg bg-white flex px-6 drop-shadow-md">
+    <div className="w-full h-[60px] max-w-[30rem] rounded-lg bg-white flex px-6 drop-shadow-md">
       <SearchIcon color="light"></SearchIcon> 
       <input className="w-full px-6 outline-none" type="text" placeholder="Search for a country..."/>
     </div>
@@ -169,12 +169,12 @@ function FilterDropdown() {
   }
 
   return (
-    <div className="flex flex-col gap-1 w-[250px] text-left relative mb-8">
+    <div className="flex flex-col gap-1 w-[250px] max-w-[12.5rem] text-left relative mb-8">
       <button onClick={toggleDrop} className="h-[60px] z-20 px-6 flex items-center justify-between bg-dark-blue rounded-md text-white self-start w-full text-left drop-shadow-md">
         <p>Filter by Region</p>
         <DropdownIcon color={"dark"} />
       </button>
-        <div className={`transition-all ease-in-out duration-500 ${dropdownVisible ? "opacity-100" : "opacity-0 -translate-y-20 scale-y-0 -top-0"} opacity-0 absolute z-10 w-full top-16 flex flex-col gap-1 items-start bg-dark-blue rounded-md p-6 text-white`}>
+        <div className={`transition-all ease-in-out duration-500 ${dropdownVisible ? "opacity-100 top-16" : "opacity-0 -translate-y-20 scale-y-0 -top-0"} opacity-0 absolute z-10 w-full flex flex-col gap-1 items-start bg-dark-blue rounded-md p-6 text-white`}>
           <button className="w-full text-left">Africa</button>
           <button className="w-full text-left">America</button>
           <button className="w-full text-left">Asia</button>
@@ -187,7 +187,7 @@ function FilterDropdown() {
 
 function FilterArea() {
   return (
-    <div className="px-[20px] flex flex-col md:flex-row justify-between items-start gap-8">
+    <div className="px-8 flex flex-col md:flex-row justify-between items-start gap-8 xl:p-0">
       <Search />
       <FilterDropdown />
     </div>
@@ -214,8 +214,8 @@ function NavBar(props: {toggleMode:Function}) {
 
 function CountryCard(props: {country:Country}) {
   return (
-    <Link to={`countries/${props.country.name}`} className="flex flex-col rounded-md max-w-[500px] min-w-[100%] text-white bg-dark-blue drop-shadow-xl overflow-hidden">
-      <img src={props.country.flag} className="h-[200px] object-cover over" alt={`flag of ${props.country.name}`} />
+    <Link to={`countries/${props.country.name}`} className="flex flex-col rounded-md max-w-[20.5rem] w-full text-white bg-dark-blue drop-shadow-xl overflow-hidden mx-auto">
+      <img src={props.country.flag} className="rounded-t-md h-[200px] object-cover bg-clip-padding" alt={`flag of ${props.country.name}`} />
       <div className="p-6">
         <p className="font-extrabold text-xl py-4">{props.country.name}</p>
         <p className="font-semibold">Population: <span className="font-thin">{props.country.population}</span></p>
@@ -228,9 +228,10 @@ function CountryCard(props: {country:Country}) {
 
 function DisplayCountries(props: {countries:Country[]}) {
   return (
-    <div>
+    <div className="mx-auto max-w-[80rem]">
       <FilterArea />
-      <div className="grid items-center w-full px-12 gap-12">
+      <div className="grid grid-cols-1 items-center justify-center content-center place-content-center w-full gap-12
+      md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
       {props.countries.map(country => (
         <CountryCard key={country.name} country={country} />
