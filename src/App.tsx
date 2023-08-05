@@ -111,56 +111,59 @@ function DetailedCountry(props: {countries:Country[], darkMode:boolean}) {
 
 
   return (
-    <div className="w-full px-8 mb-8 max-w-[80rem] mx-auto">
-      <Link className="flex items-center justify-center w-[208px] h-[64px] rounded-md shadow-lg text-white bg-dark-blue text-xl mb-12" to={'/'} >Back</Link>
-      {country && (
-        <div key={country.name} className="max-w-[800px] mx-auto flex flex-col gap-8">
-          <img src={country.flag} alt="" className="object-cover max-h-[28.75rem] w-full"/>
-          <div className="flex flex-col gap-2">
-            <p className="font-extrabold text-[2.75rem] py-8">{country.name}</p>
-            <p className="font-semibold text-[1.75rem]">Native Name: <span className="font-thin">{country.nativeName}</span></p>
-            <p className="font-semibold text-[1.75rem]">Population: <span className="font-thin">{country.population.toLocaleString()}</span></p>
-            <p className="font-semibold text-[1.75rem]">Region: <span className="font-thin">{country.region}</span></p>
-            <p className="font-semibold text-[1.75rem]">Sub Region: <span className="font-thin">{country.subregion}</span></p>
-            {country.capital &&
-              <p className="font-semibold text-[1.75rem]">Capital: <span className="font-thin">{country.capital}</span></p>
-            }
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="font-semibold text-[1.75rem]">Top Level Domain: <span className="font-thin">{country.topLevelDomain}</span></p>
-            <div className="flex gap-2">
-              <p className="font-semibold text-[1.75rem]">Currencies: </p>
-              {country.currencies.map(currency => (
-                <p className="font-semibold text-[1.75rem]" key={currency.name}><span className="font-thin">{currency.name}</span></p>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <p className="font-semibold text-[1.75rem]">Languages: </p>
-              {country.languages.map(language => (
-                <p className="font-semibold text-[1.75rem]" key={language.name}><span className="font-thin">{language.name}</span></p>
-              ))}
-            </div>
-          </div>
+    <div className={props.darkMode ? "bg-very-dark-blue" : "bg-white"}>
 
-          <div>
-            <p className="font-semibold text-[2rem]">Border Countries: </p>
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {borderCountries.length > 1 && borderCountries.map(borderCountry => (
-                <Link className="bg-dark-blue rounded-sm flex items-center justify-center text-white h-[56px] text-[1.5rem]" to={`../countries/${borderCountry}`} state={props.countries} key={borderCountry}>{borderCountry}</Link>
+      <div className={`w-full px-8 pb-8 pt-8 max-w-[80rem] mx-auto ${props.darkMode ? "text-white bg-very-dark-blue" : "text-dark-blue bg-white"}`}>
+        <Link className={`flex items-center justify-center w-[13rem] h-[4rem] rounded-md shadow-lg  text-xl mb-12 ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`} to={'/'} >Back</Link>
+        {country && (
+          <div key={country.name} className={`max-w-[50rem] mx-auto flex flex-col gap-8 ${props.darkMode ? "text-white bg-very-dark-blue" : "text-dark-blue bg-white"}`}>
+            <img src={country.flag} alt="" className="object-cover max-h-[28.75rem] w-full"/>
+            <div className="flex flex-col gap-2">
+              <p className="font-extrabold text-[2.75rem] py-8">{country.name}</p>
+              <p className="font-semibold text-[1.75rem]">Native Name: <span className="font-thin">{country.nativeName}</span></p>
+              <p className="font-semibold text-[1.75rem]">Population: <span className="font-thin">{country.population.toLocaleString()}</span></p>
+              <p className="font-semibold text-[1.75rem]">Region: <span className="font-thin">{country.region}</span></p>
+              <p className="font-semibold text-[1.75rem]">Sub Region: <span className="font-thin">{country.subregion}</span></p>
+              {country.capital &&
+                <p className="font-semibold text-[1.75rem]">Capital: <span className="font-thin">{country.capital}</span></p>
+              }
+            </div>
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-[1.75rem]">Top Level Domain: <span className="font-thin">{country.topLevelDomain}</span></p>
+              <div className="flex gap-2">
+                <p className="font-semibold text-[1.75rem]">Currencies: </p>
+                {country.currencies.map(currency => (
+                  <p className="font-semibold text-[1.75rem]" key={currency.name}><span className="font-thin">{currency.name}</span></p>
                 ))}
+              </div>
+              <div className="flex gap-2">
+                <p className="font-semibold text-[1.75rem]">Languages: </p>
+                {country.languages.map(language => (
+                  <p className="font-semibold text-[1.75rem]" key={language.name}><span className="font-thin">{language.name}</span></p>
+                ))}
+              </div>
             </div>
-          </div>
 
-        </div>
-      )
-      }
+            <div>
+              <p className="font-semibold text-[2rem]">Border Countries: </p>
+              <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {borderCountries.length > 1 && borderCountries.map(borderCountry => (
+                  <Link className="bg-dark-blue rounded-sm flex items-center justify-center text-white h-[3.5rem] text-[1.5rem]" to={`../countries/${borderCountry}`} state={props.countries} key={borderCountry}>{borderCountry}</Link>
+                  ))}
+              </div>
+            </div>
+
+          </div>
+        )
+        }
+      </div>
     </div>
   )
 }
 
 function Search(props: {filterByCountry:Function, filterBySearch:Function, darkMode:boolean}) {
   return (
-    <div className={`w-full h-[60px] max-w-[30rem] rounded-lg  flex px-6 drop-shadow-md ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
+    <div className={`w-full h-[3.75rem] max-w-[30rem] rounded-lg  flex px-6 drop-shadow-md ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
       <SearchIcon color={props.darkMode ? "dark" : "light"}></SearchIcon> 
       <input className={` w-full px-6 outline-none ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`} type="text" placeholder="Search for a country..." onChange={(e) => props.filterBySearch(e.target.value)}/>
     </div>
@@ -185,9 +188,9 @@ function FilterDropdown(props: {filterCountriesByRegion:Function, darkMode:boole
 
   return (
     <div className="flex flex-col gap-1 w-[250px] max-w-[12.5rem] text-left relative mb-8">
-      <button onClick={toggleDrop} className={`h-[60px] z-20 px-6 flex items-center justify-between bg-dark-blue rounded-md text-white self-start w-full text-left drop-shadow-md ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
+      <button onClick={toggleDrop} className={`h-[3.75rem] z-20 px-6 flex items-center justify-between bg-dark-blue rounded-md text-white self-start w-full text-left drop-shadow-md ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
         <p>Filter by Region</p>
-        <DropdownIcon color={"dark"} />
+        <DropdownIcon color={props.darkMode ? "dark" : "light"} />
       </button>
         <div className={`transition-all ease-in-out duration-500 ${dropdownVisible ? "opacity-100 top-16 drop-shadow-md" : "opacity-0 -translate-y-20 scale-y-0 -top-0"} opacity-0 absolute z-10 w-full flex flex-col gap-1 items-start  rounded-md p-6 ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
 
@@ -219,9 +222,11 @@ function ThemeSwitcher(props: {toggleMode:Function, darkMode:boolean}) {
 
 function NavBar(props: {toggleMode:Function, darkMode:boolean}) {
   return (
-    <div className={`${props.darkMode ? " text-white bg-dark-blue" : "text-dark-blue bg-white"} h-[100px] shadow-md z-50 flex items-center justify-between px-[20px] relative`}>
-      <p className="font-extrabold">Where in the world?</p>
-      <ThemeSwitcher toggleMode={props.toggleMode} darkMode={props.darkMode}/>
+    <div className={`${props.darkMode ? " text-white  bg-dark-blue" : "text-dark-blue bg-white"} text-[1rem] md:text-[1.75rem] h-[6.25rem] shadow-md z-50 flex items-center justify-between px-[1.25rem] relative`}>
+      <div className="max-w-[80rem] w-full flex justify-between items-center mx-auto">
+        <p className="font-extrabold">Where in the world?</p>
+        <ThemeSwitcher toggleMode={props.toggleMode} darkMode={props.darkMode}/>
+      </div>
     </div>
   );
 }
@@ -229,7 +234,7 @@ function NavBar(props: {toggleMode:Function, darkMode:boolean}) {
 function CountryCard(props: {country:Country, darkMode:boolean}) {
   return (
     <Link to={`countries/${props.country.name}`} className={`flex flex-col rounded-md max-w-[20.5rem] w-full drop-shadow-xl overflow-hidden mx-auto ${props.darkMode ? "text-white bg-dark-blue" : "text-dark-blue bg-white"}`}>
-      <img src={props.country.flag} className="rounded-t-md h-[200px] object-cover bg-clip-padding" alt={`flag of ${props.country.name}`} />
+      <img src={props.country.flag} className="rounded-t-md h-[12.5rem] object-cover bg-clip-padding" alt={`flag of ${props.country.name}`} />
       <div className="p-6">
         <p className="font-extrabold text-xl py-4">{props.country.name}</p>
         <p className="font-semibold">Population: <span className="font-thin">{props.country.population.toLocaleString()}</span></p>
@@ -288,7 +293,7 @@ function DisplayCountries(props: {countries:Country[], darkMode:boolean}) {
 
 function Countries(props: {countries:Country[], darkMode:boolean}) {
   return (
-    <div className={props.darkMode ? "bg-dark-blue" : "bg-white"}>
+    <div className={`${props.darkMode ? "bg-very-dark-blue" : "bg-white"} min-h-screen`}>
       <DisplayCountries countries={props.countries} darkMode={props.darkMode}/>
     </div>
   )
